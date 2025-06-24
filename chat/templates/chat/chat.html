@@ -20,21 +20,28 @@
       </span>
     </h2>
 
-    <div class="h-96 overflow-y-auto border p-4 mb-4 rounded bg-gray-50" id="chat-box"></div>
+    <div class="h-[500px] overflow-y-auto border p-4 mb-4 rounded bg-gray-50" id="chat-box"></div>
 
-    <form method="post" class="flex space-x-2">
+    <form method="post" enctype="multipart/form-data"
+      class="flex flex-col sm:flex-row sm:items-stretch space-y-2 sm:space-y-0 sm:space-x-2">
       {% csrf_token %}
-      <input type="text" name="message" placeholder="Tulis pesan..." class="flex-grow border rounded p-2" required>
+      <input type="text" name="message" placeholder="Tulis pesan..." class="flex-grow border rounded p-2"
+        autocomplete="off">
+      <input type="file" name="file" class="border rounded px-2 py-1 text-sm">
       <button type="submit" class="bg-blue-500 text-white px-4 rounded hover:bg-blue-600">Kirim</button>
     </form>
 
     <div class="mt-4">
-      <a href="{% url 'home' %}" class="text-blue-500 hover:underline">← Kembali</a>
+      <a href="{% url 'home' %}" class="text-blue-600 hover:underline">← Kembali</a>
     </div>
   </div>
 
   <script>
     let lastMessageCount = 0;
+
+    function isImage(filename) {
+      return /\.(jpg|jpeg|png|gif|webp)$/i.test(filename);
+    }
 
     function fetchMessages() {
       fetch("{% url 'fetch_messages' other_user.id %}")
@@ -51,18 +58,33 @@
             const bgColor = isSender ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black';
             const bubbleAlign = isSender ? 'rounded-l-lg rounded-br-lg' : 'rounded-r-lg rounded-bl-lg';
 
+            let filePart = "";
+            if (msg.file_url) {
+              if (isImage(msg.file_url)) {
+                filePart = `
+                  <img src="${msg.file_url}"
+                       class="mt-2 rounded max-w-[200px] max-h-[200px] object-contain shadow"
+                       alt="image">`;
+              } else {
+                filePart = `
+                  <a href="${msg.file_url}" download class="mt-2 inline-block w-full truncate text-sm text-emerald hover:text-black/90 font-medium underline break-words">
+                    ${msg.file_name}
+                  </a>`;
+              }
+            }
+
             chatBox.innerHTML += `
               <div class="flex ${msgAlign} mb-2">
-                <div class="px-3 py-2 max-w-xs ${bgColor} ${bubbleAlign}">
-                  <span class="text-sm">${msg.content}</span>
+                <div class="px-3 py-2 max-w-[80%] ${bgColor} ${bubbleAlign}">
+                  ${msg.content ? `<p class="text-sm break-words">${msg.content}</p>` : ""}
+                  ${filePart}
                 </div>
               </div>
             `;
           });
 
-          chatBox.scrollTop = chatBox.scrollHeight;
+          // chatBox.scrollTop = chatBox.scrollHeight;
 
-          // notif
           if (data.messages.length > lastMessageCount) {
             const lastSender = data.messages[data.messages.length - 1].sender;
             if (lastSender !== currentUser) {
@@ -75,7 +97,7 @@
         });
     }
 
-    setInterval(fetchMessages, 1000);  // polling tiap 1 detik
+    setInterval(fetchMessages, 1000);
     window.onload = fetchMessages;
   </script>
 </body>

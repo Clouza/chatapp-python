@@ -5,4 +5,5 @@ class Message(models.Model):
     sender = models.ForeignKey(User, related_name="sender", on_delete=models.CASCADE)
     receiver = models.ForeignKey(User, related_name="receiver", on_delete=models.CASCADE)
     content = models.TextField()
+    file = models.FileField(upload_to='chat_files/', null=True, blank=True)
     timestamp = models.DateTimeField(auto_now_add=True)

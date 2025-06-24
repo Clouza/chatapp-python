@@ -23,10 +23,14 @@ def chat_view(request, user_id):
     ).order_by('timestamp')
 
     if request.method == 'POST':
+        msg_text = request.POST.get('message', '')
+        uploaded_file = request.FILES.get('file')
+
         Message.objects.create(
             sender=request.user,
             receiver=other_user,
-            content=request.POST['message']
+            content=msg_text,
+            file=uploaded_file
         )
         return redirect('chat', user_id=other_user.id)
 
@@ -54,10 +58,18 @@ def fetch_messages(request, user_id):
         receiver__in=[request.user, other_user]
     ).order_by('timestamp')
 
-    data = [{
-        'sender': m.sender.username,
-        'content': m.content,
-        'timestamp': m.timestamp.strftime('%Y-%m-%d %H:%M:%S')
-    } for m in messages]
+    data = []
+    for m in messages:
+        message_data = {
+            'sender': m.sender.username,
+            'content': m.content,
+            'timestamp': m.timestamp.strftime('%Y-%m-%d %H:%M:%S'),
+        }
+
+        if m.file:
+            message_data['file_url'] = m.file.url
+            message_data['file_name'] = m.file.name.split('/')[-1] 
+
+        data.append(message_data)
 
     return JsonResponse({'messages': data})
