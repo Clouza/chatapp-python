@@ -4,33 +4,43 @@
 <head>
     <meta charset="UTF-8">
     <title>Login</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<style>
-    input {
-        border: 1px solid black;
-        width: 100%;
-        border-radius: 4px;
-    }
 
-    input:focus {
-        outline: none;
-    }
-</style>
-
-<body class="bg-gray-100 flex items-center justify-center h-screen">
-    <div class="bg-white p-8 rounded shadow-md w-80">
+<body class="bg-gray-100 flex items-center justify-center min-h-screen px-4">
+    <div class="w-full max-w-sm bg-white p-6 sm:p-8 rounded shadow-md">
         <h2 class="text-2xl font-semibold mb-4 text-center">Login</h2>
+
         {% if form.errors %}
-        <p class="text-red-500 text-sm mb-4">Username atau password salah!</p>
+        <p class="text-red-500 text-sm mb-4 text-center">Username atau password salah!</p>
         {% endif %}
+
         <form method="post" class="space-y-4">
             {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit" class="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600">Login</button>
+
+            <!-- Override default {{ form.as_p }} to apply Tailwind classes -->
+            <div>
+                <label for="id_username" class="block text-sm font-medium text-gray-700">Username</label>
+                <input type="text" name="username" id="id_username"
+                    class="mt-1 w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    required>
+            </div>
+
+            <div>
+                <label for="id_password" class="block text-sm font-medium text-gray-700">Password</label>
+                <input type="password" name="password" id="id_password"
+                    class="mt-1 w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    required>
+            </div>
+
+            <button type="submit"
+                class="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 transition">Login</button>
         </form>
+
         <p class="text-sm text-center mt-4">
-            Belum punya akun? <a href="/register" class="text-blue-600 hover:underline">Register</a>
+            Belum punya akun?
+            <a href="/register" class="text-blue-600 hover:underline">Register</a>
         </p>
     </div>
 </body>

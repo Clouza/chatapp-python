@@ -4,45 +4,48 @@
 <head>
     <meta charset="UTF-8">
     <title>Register</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<style>
-    input {
-        border: 1px solid black;
-        width: 100%;
-        border-radius: 4px;
-    }
 
-    input:focus {
-        outline: none;
-    }
-
-    ul {
-        padding: 2rem;
-    }
-
-    ul>li {
-        color: rgba(0, 0, 0, 0.5);
-        margin-left: 2rem;
-        list-style-type: circle;
-    }
-
-    #id_username_helptext,
-    #id_password2_helptext {
-        color: rgba(0, 0, 0, 0.5);
-        margin-left: 1.2rem;
-    }
-</style>
-
-<body class="bg-gray-100 flex items-center justify-center h-screen">
-    <div class="bg-white p-8 rounded shadow-md w-1/2">
+<body class="bg-gray-100 flex items-center justify-center min-h-screen px-4">
+    <div class="w-full max-w-xl bg-white p-6 sm:p-8 rounded shadow-md">
         <h2 class="text-2xl font-semibold mb-4 text-center">Register</h2>
+
         <form method="post" class="space-y-4">
             {% csrf_token %}
-            {{ form.as_p }}
+
+            <div>
+                <label for="id_username" class="block text-sm font-medium text-gray-700">Username</label>
+                <input type="text" name="username" id="id_username"
+                    class="mt-1 w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    required>
+                <p id="id_username_helptext" class="text-gray-500 text-xs mt-1 ml-2">
+                    Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.
+                </p>
+            </div>
+
+            <div>
+                <label for="id_password1" class="block text-sm font-medium text-gray-700">Password</label>
+                <input type="password" name="password1" id="id_password1"
+                    class="mt-1 w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    required>
+            </div>
+
+            <div>
+                <label for="id_password2" class="block text-sm font-medium text-gray-700">Confirm Password</label>
+                <input type="password" name="password2" id="id_password2"
+                    class="mt-1 w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    required>
+                <p id="id_password2_helptext" class="text-gray-500 text-xs mt-1 ml-2">
+                    Enter the same password as before, for verification.
+                </p>
+            </div>
+
             <button type="submit"
-                class="w-full bg-green-500 text-white py-2 rounded hover:bg-green-600">Register</button>
+                class="w-full bg-green-500 text-white py-2 rounded hover:bg-green-600 transition">Register</button>
         </form>
+
         <p class="text-sm text-center mt-4">
             Sudah punya akun? <a href="{% url 'login' %}" class="text-blue-600 hover:underline">Login</a>
         </p>

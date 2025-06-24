@@ -5,25 +5,32 @@
     <meta charset="UTF-8">
     <title>Home</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 
-<body class="bg-gray-50 min-h-screen p-6">
+<body class="bg-gray-50 min-h-screen p-4 sm:p-6">
     <div class="max-w-3xl mx-auto">
-        <h2 class="text-3xl font-bold mb-4">Halo, {{ request.user.username }}</h2>
-        <h3 class="text-xl mb-2">Kontak</h3>
+        <h2 class="text-2xl sm:text-3xl font-bold mb-4 break-words">Halo, {{ request.user.username }}</h2>
+
+        <h3 class="text-lg sm:text-xl mb-2">Kontak</h3>
         <ul class="space-y-2">
             {% for user in users %}
             <li>
-                <a href="{% url 'chat' user.id %}" class="block p-3 bg-white rounded shadow hover:bg-blue-50">
+                <a href="{% url 'chat' user.id %}"
+                    class="block p-3 bg-white rounded shadow hover:bg-blue-50 transition-colors text-sm sm:text-base">
                     {{ user.username }}
                 </a>
             </li>
             {% endfor %}
         </ul>
+
         <div class="mt-6">
             <form action="{% url 'logout' %}" method="post">
                 {% csrf_token %}
-                <button type="submit" class="text-red-500 hover:underline">Logout</button>
+                <button type="submit"
+                    class="text-red-500 hover:text-red-700 hover:underline text-sm sm:text-base transition-colors">
+                    Logout
+                </button>
             </form>
         </div>
     </div>
