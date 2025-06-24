@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>{{ other_user.username }}</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100 min-h-screen p-6">
+  <div class="max-w-2xl mx-auto bg-white rounded shadow p-6">
+    <h2 class="text-2xl font-semibold mb-4 flex justify-between items-center">
+      {{ other_user.username }}
+      <span id="notif-icon" class="text-xl hidden animate-pulse">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+          class="size-6">
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0M3.124 7.5A8.969 8.969 0 0 1 5.292 3m13.416 0a8.969 8.969 0 0 1 2.168 4.5" />
+        </svg>
+      </span>
+    </h2>
+
+    <div class="h-96 overflow-y-auto border p-4 mb-4 rounded bg-gray-50" id="chat-box"></div>
+
+    <form method="post" class="flex space-x-2">
+      {% csrf_token %}
+      <input type="text" name="message" placeholder="Tulis pesan..." class="flex-grow border rounded p-2" required>
+      <button type="submit" class="bg-blue-500 text-white px-4 rounded hover:bg-blue-600">Kirim</button>
+    </form>
+
+    <div class="mt-4">
+      <a href="{% url 'home' %}" class="text-blue-500 hover:underline">← Kembali</a>
+    </div>
+  </div>
+
+  <script>
+    let lastMessageCount = 0;
+
+    function fetchMessages() {
+      fetch("{% url 'fetch_messages' other_user.id %}")
+        .then(response => response.json())
+        .then(data => {
+          const chatBox = document.getElementById("chat-box");
+          const notifIcon = document.getElementById("notif-icon");
+          const currentUser = "{{ request.user.username }}";
+          chatBox.innerHTML = "";
+
+          data.messages.forEach(msg => {
+            const isSender = msg.sender === currentUser;
+            const msgAlign = isSender ? 'justify-end' : 'justify-start';
+            const bgColor = isSender ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black';
+            const bubbleAlign = isSender ? 'rounded-l-lg rounded-br-lg' : 'rounded-r-lg rounded-bl-lg';
+
+            chatBox.innerHTML += `
+              <div class="flex ${msgAlign} mb-2">
+                <div class="px-3 py-2 max-w-xs ${bgColor} ${bubbleAlign}">
+                  <span class="text-sm">${msg.content}</span>
+                </div>
+              </div>
+            `;
+          });
+
+          chatBox.scrollTop = chatBox.scrollHeight;
+
+          // notif
+          if (data.messages.length > lastMessageCount) {
+            const lastSender = data.messages[data.messages.length - 1].sender;
+            if (lastSender !== currentUser) {
+              notifIcon.classList.remove("hidden");
+              setTimeout(() => notifIcon.classList.add("hidden"), 1500);
+            }
+          }
+
+          lastMessageCount = data.messages.length;
+        });
+    }
+
+    setInterval(fetchMessages, 1000);  // polling tiap 1 detik
+    window.onload = fetchMessages;
+  </script>
+</body>
+
+</html>
